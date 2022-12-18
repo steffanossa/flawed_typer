@@ -1,14 +1,14 @@
-from random import randint, choice, uniform, choices
+from random import randint, choice, uniform
 from time import sleep
 import win32api
 import win32.lib.win32con as win32con
 from keyboards import *
 from vk_codes import VK_CODE
 
+
 # problem w special chars, layouts need work
 # all_lower not implemented yet
 # set wpm will be hit +/- 10% approx (i think)
-
 
 
 # hard coded variables
@@ -16,7 +16,8 @@ delay_constant = 50
 swing = (.25 , 1.75)
 swing_space = (1.11, 1.37)
 
-def get_neighbours(target, array):
+
+def get_neighbours(target: str, array):
 	neighbours = []
 	for row in range(len(array)):
 		for  col in range(len(array[row])):
@@ -60,30 +61,30 @@ def key_press(button: str):
 		win32api.keybd_event(VK_CODE[button], 0,0,0)
 
 
-def type_single_character(character, wpm, neighbours=[], accuracy=1, correct_rate=1, on_keyboard = True):
+def type_single_character(character: str, wpm, neighbours=[], accuracy=1, correct_rate=1, on_keyboard = True):
     if on_keyboard:
         error = randint(1, 100)
         correction = randint(1, 100)
         if error > accuracy * 100:
             faulty_character = choice(neighbours)
             key_press(faulty_character)
-            delay = delay_constant / (wpm * 5) * uniform(swing)
+            delay = delay_constant / (wpm * 5) * uniform(swing[0], swing[1])
             sleep(delay)
             if correction > correct_rate * 100:
                 return
             key_press("backspace")
-            delay = delay_constant / (wpm * 5) * uniform(swing)
+            delay = delay_constant / (wpm * 5) * uniform(swing[0], swing[1])
             sleep(delay/5)
     key_press(character)
-    delay = delay_constant / (wpm * 5) * uniform(swing)
+    delay = delay_constant / (wpm * 5) * uniform(swing[0], swing[1])
 	# extra delay after spaces
     if character == " ":
-        delay = delay * uniform(swing_space)
+        delay = delay * uniform(swing_space[0], swing_space[1])
     sleep(delay)
     return
 
 
-def type(string, wpm = 80, accuracy = .95, correct_rate = 1.0, kb_layout = "de", all_lower = False):
+def type(string:str, wpm = 80, accuracy = .95, correct_rate = 1.0, kb_layout = "de", all_lower = False):
 	if all_lower:
 		string = string.lower()
 	for character in string:
